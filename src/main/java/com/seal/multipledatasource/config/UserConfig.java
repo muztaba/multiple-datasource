@@ -42,7 +42,7 @@ public class UserConfig {
         return dataSource;
     }
 
-    @Bean
+    @Bean(name = "userEntityManager")
     @Primary
     public LocalContainerEntityManagerFactoryBean getEntityManager() {
         LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean =
@@ -59,7 +59,7 @@ public class UserConfig {
         return localContainerEntityManagerFactoryBean;
     }
 
-    @Bean
+    @Bean(name = "userTransactionManager")
     @Primary
     public PlatformTransactionManager getTransactionManager() {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
