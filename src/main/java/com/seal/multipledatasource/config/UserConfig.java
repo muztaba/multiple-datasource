@@ -31,7 +31,7 @@ public class UserConfig {
     @Autowired
     Environment env;
 
-    @Bean
+    @Bean("userDataSource")
     @Primary
     public DataSource getDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -44,10 +44,10 @@ public class UserConfig {
 
     @Bean(name = "userEntityManager")
     @Primary
-    public LocalContainerEntityManagerFactoryBean getEntityManager() {
+    public LocalContainerEntityManagerFactoryBean getEntityManager(@Qualifier("userDataSource") DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean =
                 new LocalContainerEntityManagerFactoryBean();
-        localContainerEntityManagerFactoryBean.setDataSource(getDataSource());
+        localContainerEntityManagerFactoryBean.setDataSource(dataSource);
         localContainerEntityManagerFactoryBean.setPackagesToScan("com.seal.multipledatasource.entity.user");
 
         HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
@@ -61,9 +61,10 @@ public class UserConfig {
 
     @Bean(name = "userTransactionManager")
     @Primary
-    public PlatformTransactionManager getTransactionManager() {
+    public PlatformTransactionManager getTransactionManager(@Qualifier("userEntityManager")
+                                                                        LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(getEntityManager().getObject());
+        transactionManager.setEntityManagerFactory(entityManagerFactoryBean.getObject());
         return transactionManager;
     }
 }
